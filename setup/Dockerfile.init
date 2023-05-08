@@ -1,0 +1,6 @@
+FROM hashicorp/vault:1.13
+RUN apk add jq curl moreutils \
+    && mkdir -p /scripts
+ADD ./scripts/ /scripts/
+WORKDIR /data
+CMD ["/bin/sh"]

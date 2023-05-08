@@ -1,0 +1,48 @@
+version: "3.7"
+
+volumes:
+  consul-config: {}
+  consul-data: {}
+  vault-config: {}
+  vault-policies: {}
+  vault-data: {}
+  vault-logs: {}
+
+networks:
+  vault-backend:
+    name: vault-backend
+
+services:
+  vault:
+    restart: unless-stopped
+    image: hashicorp/vault:1.13
+    command: ["server", "-log-level=info"]
+    networks:
+      - vault-backend
+    ports:
+      - 8200:8200
+    volumes:
+      - vault-config:/vault/config
+      - vault-policies:/vault/policies
+      - vault-data:/vault/data
+      - vault-logs:/vault/logs
+    environment:
+      - 'VAULT_LOCAL_CONFIG={"backend":{"consul":{"address":"consul:8500","path":"vault/"}},"listener":{"tcp":{"address":"0.0.0.0:8200","tls_disable":1}},"ui":true}'
+    cap_add:
+      - IPC_LOCK
+    depends_on:
+      - consul
+
+  consul:
+    restart: unless-stopped
+    image: hashicorp/consul:1.14
+    networks:
+      - vault-backend
+    ports:
+      - 8500:8500
+    volumes:
+      - consul-data:/consul/data
+      - consul-config:/consul/config
+      - ${PWD}/config/consul-config.json:/consul/config/config.json
+
+
