@@ -14,5 +14,5 @@ This is a Self hosted CA.
 
 
 
-## Refrence
+## Reference
 - https://holdmybeersecurity.com/2020/07/09/install-setup-vault-for-pki-nginx-docker-becoming-your-own-ca/
